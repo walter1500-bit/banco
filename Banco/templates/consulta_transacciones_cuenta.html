@@ -1,0 +1,85 @@
+{% extends 'formato.html' %}
+
+{% block section%}
+
+<div class="container mt-5">
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <span>Transacciones de la Cuenta: <strong>{{ cuenta.numero_cuenta }}</strong></span>
+            <a href="{% url 'consulta_cuentas_cliente' cuenta.cliente.dpi %}" class="btn btn-sm btn-light">Volver a Cuentas</a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Cliente:</strong> {{ cuenta.cliente.nombre }}</p>
+                    <p><strong>DPI:</strong> {{ cuenta.cliente.dpi }}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p><strong>Tipo de Cuenta:</strong> <span class="text-capitalize">{{ cuenta.tipo_cuenta }}</span></p>
+                    <h5 class="text-success"><strong>Saldo Actual:</strong> Q {{ cuenta.saldo }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Historial de Transacciones</h5>
+        </div>
+        
+        <div class="card-body">
+            
+            <form method="get" class="row g-3 mb-4 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio|default:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin|default:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a href="?" class="btn btn-outline-secondary ms-2">Limpiar Filtros</a>
+                </div>
+            </form>
+
+            <table class="table table-striped table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Descripción</th>
+                        <th>Saldo Resultante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaccion in transacciones %}
+                    <tr>
+                        <td>{{ transaccion.fecha|date:"d/m/Y H:i:s" }}</td>
+                        <td>
+                            {% if transaccion.tipo == 'deposito' %}
+                            <span class="badge bg-success">Depósito</span>
+                            {% else %}
+                            <span class="badge bg-danger">Retiro</span>
+                            {% endif %}
+                        </td>
+                        <td>Q {{ transaccion.monto }}</td>
+                        <td>{{ transaccion.descripcion }}</td>
+                        <td><strong>Q {{ transaccion.saldo_historico }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No se encontraron transacciones en este rango de fechas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% endblock section %}
